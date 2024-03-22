@@ -41,7 +41,7 @@
       "!{projectRoot}/.eslintrc.json",
       "!{projectRoot}/eslint.config.js"
     ],
-    "sharedGlobals": []
+    "sharedGlobals": ["{workspaceRoot}/go.work"]
   },
   "generators": {
     "@nx/react": {
@@ -60,5 +60,6 @@
       }
     }
   },
-  "nxCloudAccessToken": "OWZkMDZiMjctNTg0Yy00MDk3LTg4NWUtNzgxNGJmMzhjZGNkfHJlYWQtd3JpdGU="
+  "nxCloudAccessToken": "OWZkMDZiMjctNTg0Yy00MDk3LTg4NWUtNzgxNGJmMzhjZGNkfHJlYWQtd3JpdGU=",
+  "plugins": ["@nx-go/nx-go"]
 }
