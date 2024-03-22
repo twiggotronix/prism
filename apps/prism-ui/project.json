@@ -1,7 +1,7 @@
 {
-  "name": "prism",
+  "name": "prism-ui",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/prism/src",
+  "sourceRoot": "apps/prism-ui/src",
   "projectType": "application",
   "targets": {
     "build": {
@@ -9,7 +9,7 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/prism"
+        "outputPath": "dist/apps/prism-ui"
       },
       "configurations": {
         "development": {
@@ -24,15 +24,15 @@
       "executor": "@nx/vite:dev-server",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "prism:build"
+        "buildTarget": "prism-ui:build"
       },
       "configurations": {
         "development": {
-          "buildTarget": "prism:build:development",
+          "buildTarget": "prism-ui:build:development",
           "hmr": true
         },
         "production": {
-          "buildTarget": "prism:build:production",
+          "buildTarget": "prism-ui:build:production",
           "hmr": false
         }
       }
@@ -41,14 +41,14 @@
       "executor": "@nx/vite:preview-server",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "prism:build"
+        "buildTarget": "prism-ui:build"
       },
       "configurations": {
         "development": {
-          "buildTarget": "prism:build:development"
+          "buildTarget": "prism-ui:build:development"
         },
         "production": {
-          "buildTarget": "prism:build:production"
+          "buildTarget": "prism-ui:build:production"
         }
       }
     },
@@ -56,7 +56,7 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../coverage/apps/prism"
+        "reportsDirectory": "../../coverage/apps/prism-ui"
       }
     },
     "lint": {

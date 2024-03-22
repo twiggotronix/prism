@@ -1,19 +1,19 @@
 {
-  "name": "prism-e2e",
+  "name": "prism-ui-e2e",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "sourceRoot": "apps/prism-e2e/src",
+  "sourceRoot": "apps/prism-ui-e2e/src",
   "targets": {
     "e2e": {
       "executor": "@nx/playwright:playwright",
-      "outputs": ["{workspaceRoot}/dist/.playwright/apps/prism-e2e"],
+      "outputs": ["{workspaceRoot}/dist/.playwright/apps/prism-ui-e2e"],
       "options": {
-        "config": "apps/prism-e2e/playwright.config.ts"
+        "config": "apps/prism-ui-e2e/playwright.config.ts"
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint"
     }
   },
-  "implicitDependencies": ["prism"]
+  "implicitDependencies": ["prism-ui"]
 }
