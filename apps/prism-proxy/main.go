@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 
@@ -37,6 +38,7 @@ func main() {
 	if os.Getenv("ENVIRONMENT") == "dev" {
 		router.ForwardedByClientIP = true
 		router.SetTrustedProxies([]string{"127.0.0.1"})
+		router.Use(cors.Default())
 	}
 
 	proxyRepository := repository.NewProxyRepository(dbInstance.Get())
