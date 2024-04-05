@@ -1,12 +1,24 @@
-import { Typography } from "@material-tailwind/react";
+import { faAdd, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+    Button,
+    Dialog,
+    DialogBody,
+    DialogHeader,
+    Typography,
+} from "@material-tailwind/react";
 import {
     createColumnHelper,
     flexRender,
     getCoreRowModel,
     useReactTable,
+    type Row,
     type TableOptions,
 } from "@tanstack/react-table";
-import type { Proxy } from "../../models/proxy";
+import { useState } from "react";
+import { useProxyDeleteMutation } from "../../hooks/use-proxy-delete-mutation.hook";
+import { Method, Proxy } from "../../models/proxy";
+import ProxyForm from "../proxy-form/proxy-form";
 import styles from "./proxy-table.module.scss";
 
 export interface TableProps {
@@ -14,6 +26,11 @@ export interface TableProps {
 }
 
 export function ProxyTable({ tableData }: TableProps) {
+    const [openDialog, setOpenDialog] = useState<boolean>(false);
+    const [currentRow, setCurrentRow] = useState<Row<Proxy>>();
+    const { setProxyDeleteMutation } = useProxyDeleteMutation();
+
+    const handleOpen = () => setOpenDialog(!openDialog);
     const columnHelper = createColumnHelper<Proxy>();
     const columns = [
         columnHelper.accessor("name", {
@@ -38,9 +55,26 @@ export function ProxyTable({ tableData }: TableProps) {
         columns,
         data: tableData,
         getCoreRowModel: getCoreRowModel(),
+        enableRowSelection: true,
     } as TableOptions<Proxy>);
+
+    const closeDialog = () => {
+        setCurrentRow(undefined);
+        setOpenDialog(false);
+    };
+
     return (
         <div className={styles["container"]}>
+            <div className="text-right">
+                <Button
+                    title="Add a new proxy"
+                    onClick={() => {
+                        setOpenDialog(true);
+                    }}
+                >
+                    <FontAwesomeIcon icon={faAdd} />
+                </Button>
+            </div>
             <table className="w-full min-w-[640px] table-auto">
                 <thead>
                     {table.getHeaderGroups().map(headerGroup => (
@@ -58,6 +92,14 @@ export function ProxyTable({ tableData }: TableProps) {
                                     </Typography>
                                 </th>
                             ))}
+                            <th className="border-blue-gray-50 border-b py-3 px-5 text-left">
+                                <Typography
+                                    variant="small"
+                                    className="text-blue-gray-400 text-[11px] font-bold uppercase"
+                                >
+                                    Actions
+                                </Typography>
+                            </th>
                         </tr>
                     ))}
                 </thead>
@@ -69,7 +111,7 @@ export function ProxyTable({ tableData }: TableProps) {
                                 : "border-b border-blue-gray-50"
                         }`;
                         return (
-                            <tr>
+                            <tr key={row.id}>
                                 {row.getVisibleCells().map(cell => (
                                     <td key={cell.id} className={className}>
                                         {flexRender(
@@ -78,11 +120,56 @@ export function ProxyTable({ tableData }: TableProps) {
                                         )}
                                     </td>
                                 ))}
+                                <td>
+                                    <Button
+                                        data-ripple-light="true"
+                                        data-dialog-target="dialog"
+                                        className="select-none disabled:pointer-events-none"
+                                        onClick={() => {
+                                            setCurrentRow(row);
+                                            handleOpen();
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={faPencil} />
+                                    </Button>
+                                    <Button
+                                        data-ripple-light="true"
+                                        data-dialog-target="dialog"
+                                        className="ml-2 select-none disabled:pointer-events-none"
+                                        onClick={() => {
+                                            setProxyDeleteMutation.mutateAsync({
+                                                proxy: row.original,
+                                            });
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={faTrash} />
+                                    </Button>
+                                </td>
                             </tr>
                         );
                     })}
                 </tbody>
             </table>
+            <Dialog open={openDialog} handler={handleOpen}>
+                <>
+                    <DialogHeader>{currentRow?.original.name}</DialogHeader>
+                    <DialogBody>
+                        <ProxyForm
+                            proxy={
+                                currentRow?.original ??
+                                ({
+                                    method: Method.Get,
+                                    name: "",
+                                    path: "",
+                                    source: "",
+                                } as Proxy)
+                            }
+                            cancelFn={closeDialog}
+                            savedFn={closeDialog}
+                        />
+                    </DialogBody>
+                </>
+            </Dialog>
         </div>
     );
 }

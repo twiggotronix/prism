@@ -8,7 +8,7 @@ export interface HomeProps {}
 export function Home(props: HomeProps) {
     return (
         <div className={styles["container"]}>
-            <Layout pageTitle="Home page">
+            <Layout pageTitle="Proxies">
                 <Proxies />
             </Layout>
         </div>
