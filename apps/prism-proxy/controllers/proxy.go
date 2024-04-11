@@ -79,13 +79,14 @@ func (p *proxyController) GetAll(context *gin.Context) {
 
 func (p *proxyController) Save(context *gin.Context) {
 	var newProxy models.Proxy
-	if err := context.ShouldBindJSON(&newProxy); err != nil {
+	err := context.ShouldBindJSON(&newProxy)
+	if err != nil {
 		context.Error(err)
 		context.JSON(http.StatusBadRequest, gin.H{"message": err.Error(), "status": false})
 		return
 	}
 
-	err := p.proxyRepository.Save(&newProxy)
+	err = p.proxyRepository.Save(&newProxy)
 	if err != nil {
 		context.Error(err)
 		context.JSON(http.StatusInternalServerError, gin.H{"message": err.Error(), "status": false})

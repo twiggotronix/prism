@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
         cacheDir: "../../node_modules/.vite/apps/prism",
 
         server: {
-            port: 4200,
+            port: 4201,
             host: "localhost",
         },
 

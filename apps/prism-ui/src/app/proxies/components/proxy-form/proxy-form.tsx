@@ -1,7 +1,11 @@
-import { Input, Option, Select, Typography } from "@material-tailwind/react";
-import { useEffect } from "react";
-import { useProxyForm } from "../../hooks/use-proxy-form.hook";
-import { Method, type Proxy } from "../../models/proxy";
+import { faClose, faSave } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Button } from "@material-tailwind/react";
+import { FormProvider, useForm } from "react-hook-form";
+import SelectInput from "../../../common/form/select-input/select-input";
+import TextInput from "../../../common/form/text-input/text-input";
+import { useProxyMutation } from "../../hooks/use-proxy-mutation.hook";
+import { type Proxy } from "../../models/proxy";
 import styles from "./proxy-form.module.scss";
 
 export interface ProxyFormProps {
@@ -11,118 +15,107 @@ export interface ProxyFormProps {
 }
 
 export function ProxyForm({ proxy, cancelFn, savedFn }: ProxyFormProps) {
-    const {
-        formData,
-        setFormData,
-        handleChange,
-        updateProxy,
-        renderFormActionButtons,
-    } = useProxyForm();
+    const { setProxyMutation } = useProxyMutation();
 
-    useEffect(() => {
-        setFormData(proxy);
-    }, [proxy, setFormData]);
+    const form = useForm<Proxy>();
+    const onSubmit = form.handleSubmit(formData => {
+        setProxyMutation.mutateAsync({ proxy: { ...formData, id: proxy?.id } });
+        if (savedFn != null) {
+            savedFn();
+        }
+    });
 
     return (
         <div className={styles["container"]}>
-            <form
-                onSubmit={e => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    updateProxy(proxy);
-                    if (savedFn != null) {
-                        savedFn();
-                    }
-                }}
-            >
-                <div className="mb-1 flex flex-col gap-6">
-                    <Typography
-                        variant="h6"
-                        color="blue-gray"
-                        className="-mb-3"
-                    >
-                        Name
-                    </Typography>
-                    <Input
-                        placeholder="Name"
-                        size="md"
-                        value={formData.name}
-                        className="!border-t-blue-gray-200 focus:!border-t-gray-900"
-                        labelProps={{
-                            className: "before:content-none after:content-none",
-                        }}
-                        name="name"
-                        onChange={handleChange}
-                        crossOrigin={undefined}
-                    ></Input>
-                    <Typography
-                        variant="h6"
-                        color="blue-gray"
-                        className="-mb-3"
-                    >
-                        Method
-                    </Typography>
-                    <Select
-                        value={formData.method}
-                        label="method"
-                        name="method"
-                        onChange={value =>
-                            handleChange({
-                                target: {
-                                    name: "method",
-                                    value: value ?? Method.Get,
+            <FormProvider {...form}>
+                <form
+                    noValidate
+                    autoComplete="off"
+                    onSubmit={e => {
+                        e.preventDefault();
+                    }}
+                >
+                    <div className="mb-1 flex flex-col gap-6">
+                        <TextInput
+                            id={"proxy-name"}
+                            placeholder="Name"
+                            label="Name"
+                            name="name"
+                            defaultValue={proxy?.name ?? ""}
+                            validation={{
+                                required: {
+                                    value: true,
+                                    message: "A name is required",
                                 },
-                            })
-                        }
-                    >
-                        <Option value="GET">GET</Option>
-                        <Option value="POST">POST</Option>
-                        <Option value="PUT">PUT</Option>
-                        <Option value="DELETE">DELETE</Option>
-                    </Select>
-                    <Typography
-                        variant="h6"
-                        color="blue-gray"
-                        className="-mb-3"
-                    >
-                        Path
-                    </Typography>
-                    <Input
-                        placeholder="Path"
-                        size="md"
-                        value={formData.path}
-                        className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                        labelProps={{
-                            className: "before:content-none after:content-none",
-                        }}
-                        name="path"
-                        onChange={handleChange}
-                        crossOrigin={undefined}
-                    ></Input>
-                    <Typography
-                        variant="h6"
-                        color="blue-gray"
-                        className="-mb-3"
-                    >
-                        Source
-                    </Typography>
-                    <Input
-                        placeholder="Source"
-                        size="md"
-                        value={formData.source}
-                        className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                        labelProps={{
-                            className: "before:content-none after:content-none",
-                        }}
-                        name="source"
-                        onChange={handleChange}
-                        crossOrigin={undefined}
-                    ></Input>
-                </div>
-                <div className="mt-10 text-right">
-                    {renderFormActionButtons(cancelFn)}
-                </div>
-            </form>
+                            }}
+                        ></TextInput>
+                        <SelectInput
+                            defaultValue={proxy?.method}
+                            id="method"
+                            label="Method"
+                            name="name"
+                            options={[
+                                { value: "GET", label: "GET" },
+                                { value: "POST", label: "POST" },
+                                { value: "PUT", label: "PUT" },
+                                { value: "DELETE", label: "DELETE" },
+                            ]}
+                            validation={{
+                                required: {
+                                    value: true,
+                                    message: "Please select a method",
+                                },
+                            }}
+                        />
+
+                        <TextInput
+                            id={"proxy-path"}
+                            label="Path"
+                            placeholder="Path"
+                            defaultValue={proxy?.path ?? ""}
+                            name="path"
+                            validation={{
+                                required: {
+                                    value: true,
+                                    message: "Please input a path",
+                                },
+                            }}
+                        ></TextInput>
+
+                        <TextInput
+                            id={"proxy-source"}
+                            label="Source"
+                            placeholder="Source"
+                            defaultValue={proxy?.source ?? ""}
+                            name="source"
+                            validation={{
+                                required: {
+                                    value: true,
+                                    message: "Please input a source",
+                                },
+                            }}
+                        ></TextInput>
+                    </div>
+                    <div className="mt-10 text-right">
+                        <Button onClick={onSubmit} variant="outlined">
+                            <FontAwesomeIcon
+                                icon={faSave}
+                                size={"lg"}
+                                className="mr-1"
+                            />
+                            save
+                        </Button>
+                        <Button onClick={cancelFn} className="ml-3">
+                            <FontAwesomeIcon
+                                icon={faClose}
+                                size={"lg"}
+                                className="mr-1"
+                            />
+                            Close
+                        </Button>
+                    </div>
+                </form>
+            </FormProvider>
         </div>
     );
 }

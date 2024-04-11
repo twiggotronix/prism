@@ -69,6 +69,7 @@ export function ProxyTable({ tableData }: TableProps) {
                 <Button
                     title="Add a new proxy"
                     onClick={() => {
+                        setCurrentRow(undefined);
                         setOpenDialog(true);
                     }}
                 >
@@ -152,7 +153,9 @@ export function ProxyTable({ tableData }: TableProps) {
             </table>
             <Dialog open={openDialog} handler={handleOpen}>
                 <>
-                    <DialogHeader>{currentRow?.original.name}</DialogHeader>
+                    <DialogHeader>
+                        {currentRow?.original.name ?? "New proxy"}
+                    </DialogHeader>
                     <DialogBody>
                         <ProxyForm
                             proxy={

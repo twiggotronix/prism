@@ -25,11 +25,11 @@ func (e HttpMethod) String() string {
 }
 
 type Proxy struct {
-	ID     uint       `gorm:"primaryKey" json:"id"`
-	Name   string     `json:"name"`
-	Path   string     `json:"path"`
-	Method HttpMethod `json:"method" gorm:"type:enum('GET', 'POST', 'PUT', 'DELETE')" default:"GET"`
-	Source string     `json:"source"`
+	ID     uint       `gorm:"primaryKey" json:"id,omitempty"`
+	Name   string     `json:"name" binding:"required"`
+	Path   string     `json:"path" binding:"required"`
+	Method HttpMethod `json:"method" gorm:"type:enum('GET', 'POST', 'PUT', 'DELETE')" default:"GET" binding:"required"`
+	Source string     `json:"source" binding:"required"`
 }
 
 type Config struct {

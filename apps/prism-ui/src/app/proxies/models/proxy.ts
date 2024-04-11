@@ -5,7 +5,7 @@ export enum Method {
     Delete = "DELETE",
 }
 export type Proxy = {
-    id: number;
+    id?: number;
     name: string;
     path: string;
     method: Method;
