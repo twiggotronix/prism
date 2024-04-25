@@ -1,14 +1,14 @@
-import { faWarning } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Alert, Input } from "@material-tailwind/react";
-import { useEffect, useState } from "react";
+import { Input } from "@material-tailwind/react";
+import { useEffect, useState, type HTMLInputTypeAttribute } from "react";
 import { useFormContext, type RegisterOptions } from "react-hook-form";
 import FormLabel from "../form-label/form-label";
+import InputError from "../input-error/input-error";
 import styles from "./text-input.module.scss";
 
 export interface TextInputProps {
     label: string;
     validation?: RegisterOptions;
+    type?: HTMLInputTypeAttribute;
 }
 
 export function TextInput({
@@ -16,10 +16,9 @@ export function TextInput({
     id,
     label,
     validation,
-    defaultValue,
     name,
-}: TextInputProps &
-    Pick<HTMLInputElement, "placeholder" | "id" | "defaultValue" | "name">) {
+    type,
+}: TextInputProps & Pick<HTMLInputElement, "placeholder" | "id" | "name">) {
     const {
         register,
         formState: { errors },
@@ -27,15 +26,15 @@ export function TextInput({
     const [errorMessages, setErrorMessages] = useState<string[]>([]);
 
     useEffect(() => {
-        setErrorMessages(
-            Object.keys(errors)
-                .filter(inputName => inputName.startsWith(name))
-                .reduce((cur, key) => {
-                    cur.push(errors[key]?.message as string);
-                    return cur;
-                }, [] as string[]),
-        );
+        const err = Object.keys(errors)
+            .filter(inputName => inputName.startsWith(name))
+            .reduce((cur, key) => {
+                cur.push(errors[key]?.message as string);
+                return cur;
+            }, [] as string[]);
+        setErrorMessages(err);
     }, [errors, name, setErrorMessages]);
+    console.log(errorMessages);
 
     return (
         <div className={styles["container"]}>
@@ -45,9 +44,9 @@ export function TextInput({
                     <InputError message={errorMessage} />
                 ))}
             <Input
+                type={type ?? "text"}
                 placeholder={placeholder}
                 id={id}
-                defaultValue={defaultValue}
                 size="md"
                 className="!border-t-blue-gray-200 focus:!border-t-gray-900"
                 labelProps={{
@@ -61,15 +60,3 @@ export function TextInput({
 }
 
 export default TextInput;
-
-const InputError = ({ message }: { message: string }) => {
-    return (
-        <Alert
-            open={true}
-            color={"red"}
-            icon={<FontAwesomeIcon icon={faWarning} className="h-6 w-6" />}
-        >
-            {message}
-        </Alert>
-    );
-};

@@ -1,11 +1,12 @@
 import { faClose, faSave } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { DevTool } from "@hookform/devtools";
 import { Button } from "@material-tailwind/react";
 import { FormProvider, useForm } from "react-hook-form";
 import SelectInput from "../../../common/form/select-input/select-input";
 import TextInput from "../../../common/form/text-input/text-input";
 import { useProxyMutation } from "../../hooks/use-proxy-mutation.hook";
-import { type Proxy } from "../../models/proxy";
+import { Method, type Proxy } from "../../models/proxy";
 import styles from "./proxy-form.module.scss";
 
 export interface ProxyFormProps {
@@ -13,13 +14,33 @@ export interface ProxyFormProps {
     cancelFn?: () => void;
     savedFn?: () => void;
 }
+type ProxyForm = {
+    name: string;
+    path: string;
+    method: string;
+    source: string;
+};
 
 export function ProxyForm({ proxy, cancelFn, savedFn }: ProxyFormProps) {
     const { setProxyMutation } = useProxyMutation();
 
-    const form = useForm<Proxy>();
+    const form = useForm<ProxyForm>({
+        mode: "onBlur",
+        defaultValues: {
+            name: proxy?.name,
+            path: proxy?.path,
+            method: proxy?.method ?? Method.Get,
+            source: proxy?.source,
+        },
+    });
     const onSubmit = form.handleSubmit(formData => {
-        setProxyMutation.mutateAsync({ proxy: { ...formData, id: proxy?.id } });
+        setProxyMutation.mutateAsync({
+            proxy: {
+                ...formData,
+                id: proxy?.id,
+                method: formData.method as Method,
+            },
+        });
         if (savedFn != null) {
             savedFn();
         }
@@ -27,6 +48,7 @@ export function ProxyForm({ proxy, cancelFn, savedFn }: ProxyFormProps) {
 
     return (
         <div className={styles["container"]}>
+            <DevTool control={form.control} placement="top-right" />
             <FormProvider {...form}>
                 <form
                     noValidate
@@ -35,25 +57,23 @@ export function ProxyForm({ proxy, cancelFn, savedFn }: ProxyFormProps) {
                         e.preventDefault();
                     }}
                 >
-                    <div className="mb-1 flex flex-col gap-6">
+                    <div className={"mb-1 flex flex-col gap-6"}>
                         <TextInput
                             id={"proxy-name"}
-                            placeholder="Name"
-                            label="Name"
-                            name="name"
-                            defaultValue={proxy?.name ?? ""}
+                            placeholder={"Name"}
+                            label={"Name"}
+                            name={"name"}
                             validation={{
                                 required: {
                                     value: true,
-                                    message: "A name is required",
+                                    message: "Please enter a name",
                                 },
                             }}
                         ></TextInput>
                         <SelectInput
-                            defaultValue={proxy?.method}
-                            id="method"
-                            label="Method"
-                            name="name"
+                            id={"proxy-method"}
+                            label={"Method"}
+                            name={"method"}
                             options={[
                                 { value: "GET", label: "GET" },
                                 { value: "POST", label: "POST" },
@@ -70,46 +90,53 @@ export function ProxyForm({ proxy, cancelFn, savedFn }: ProxyFormProps) {
 
                         <TextInput
                             id={"proxy-path"}
-                            label="Path"
-                            placeholder="Path"
-                            defaultValue={proxy?.path ?? ""}
-                            name="path"
+                            label={"Path"}
+                            placeholder={"Path"}
+                            name={"path"}
                             validation={{
                                 required: {
                                     value: true,
-                                    message: "Please input a path",
+                                    message: "Please enter a path",
                                 },
                             }}
                         ></TextInput>
 
                         <TextInput
                             id={"proxy-source"}
-                            label="Source"
-                            placeholder="Source"
-                            defaultValue={proxy?.source ?? ""}
-                            name="source"
+                            type={"url"}
+                            label={"Source"}
+                            placeholder={"Source"}
+                            name={"source"}
                             validation={{
                                 required: {
                                     value: true,
-                                    message: "Please input a source",
+                                    message: "Please enter a source",
+                                },
+                                pattern: {
+                                    value: /^(https?:\/\/)[\-a-zA-Z0-9@:.]{2,256}\.[a-z]{2,6}\/?[\-a-zA-Z0-9@:%_+.~#?&/=]*$/gi,
+                                    message: "Please enter a valid URL",
                                 },
                             }}
                         ></TextInput>
                     </div>
-                    <div className="mt-10 text-right">
-                        <Button onClick={onSubmit} variant="outlined">
+                    <div className={"mt-10 text-right"}>
+                        <Button
+                            onClick={onSubmit}
+                            variant="outlined"
+                            disabled={!form.formState.isValid}
+                        >
                             <FontAwesomeIcon
                                 icon={faSave}
                                 size={"lg"}
-                                className="mr-1"
+                                className={"mr-1"}
                             />
                             save
                         </Button>
-                        <Button onClick={cancelFn} className="ml-3">
+                        <Button onClick={cancelFn} className={"ml-3"}>
                             <FontAwesomeIcon
                                 icon={faClose}
                                 size={"lg"}
-                                className="mr-1"
+                                className={"mr-1"}
                             />
                             Close
                         </Button>
