@@ -113,7 +113,7 @@ export function ProxyForm({ proxy, cancelFn, savedFn }: ProxyFormProps) {
                                     message: "Please enter a source",
                                 },
                                 pattern: {
-                                    value: /^(https?:\/\/)[\-a-zA-Z0-9@:.]{2,256}\.[a-z]{2,6}\/?[\-a-zA-Z0-9@:%_+.~#?&/=]*$/gi,
+                                    value: /^(https?:\/\/)[-a-zA-Z0-9@:.]{2,256}\.[a-z]{2,6}\/?[-a-zA-Z0-9@:%_+.~#?&/=]*$/gi,
                                     message: "Please enter a valid URL",
                                 },
                             }}
