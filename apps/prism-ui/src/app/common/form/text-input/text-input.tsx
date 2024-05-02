@@ -34,7 +34,6 @@ export function TextInput({
             }, [] as string[]);
         setErrorMessages(err);
     }, [errors, name, setErrorMessages]);
-    console.log(errorMessages);
 
     return (
         <div className={styles["container"]}>
