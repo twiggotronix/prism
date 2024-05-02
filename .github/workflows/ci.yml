@@ -22,6 +22,12 @@ jobs:
               with:
                   node-version: 20
                   cache: "npm"
+
+            - name: Setup Go 1.22
+              uses: actions/setup-go@v5
+              with:
+                  go-version: 1.22
+
             - run: npm i
             - uses: nrwl/nx-set-shas@v4
 
