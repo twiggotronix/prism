@@ -4,6 +4,8 @@
     "license": "MIT",
     "scripts": {
         "start": "nx run-many --target=serve --projects=prism-proxy,prism-ui",
+        "lint": "nx run-many --target=lint --projects=prism-proxy,prism-ui",
+        "test": "nx run-many --target=test --projects=prism-proxy,prism-ui",
         "start:ui": "nx run-many --target=serve --projects=prism-ui",
         "test:ui": "nx run-many --target=test --projects=prism-ui",
         "start:proxy": "nx run-many --target=serve --projects=prism-proxy",

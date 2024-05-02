@@ -35,4 +35,5 @@ jobs:
             # - run: npx nx-cloud start-ci-run --distribute-on="5 linux-medium-js" --stop-agents-after="build"
 
             - run: npx nx-cloud record -- nx format:check
-            - run: npx nx affected -t=lint,test,build
+            - run: npm run lint
+            - run: npm run test
